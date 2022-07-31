@@ -47,7 +47,7 @@ We have provided a database scheme for you which is available in `create_tables.
 - **ReservationsId**: Used for obtaining atomically increasing reservation ID.
 
 
-#### Requirements
+#### Specifications
 The following are the functional specifications for the flight service system, implemented in `Query.py`
 
 - **create** takes in a new username, password, and initial account balance as input. It creates a new user account with the initial balance.
