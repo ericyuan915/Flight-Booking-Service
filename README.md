@@ -11,7 +11,6 @@
 * Complete a working prototype of flight booking application that connects to the SQLite database then allows customers to use a CLI to search, book, cancel, etc. flights
 
 UI (`FlightService.py`) and partial backend (`Query.py`).
-In real life, I would develop a web-based interface instead of a CLI.
 
 
 *** Please enter one of the following commands ***
