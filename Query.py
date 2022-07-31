@@ -268,40 +268,6 @@ class Query:
             self.conn.cursor().execute("ROLLBACK;")
         return response
 
-
-
-    # def transactionCreateCustomer(self, username, password, initAmount):
-    #     #this is an example function.
-    #     can = False
-    #     while not can:
-    #         try:
-    #             self.conn.cursor().execute('BEGIN EXCLUSIVE')
-    #             can = True
-    #         except:
-    #             can = False
-    #     try:
-    #         response = ""
-    #         if(initAmount >= 0):
-                
-    #             self.conn.cursor().execute(self.CREATE_CUSTOMER_SQL.format(username, password, initAmount))
-    #             response = "Created user {}\n".format(username)
-
-    #         else:
-    #             self.conn.cursor().execute('ROLLBACK')
-    #             response = "Failed to create user\n"
-    #             return response
-
-    #     except:
-    #         #we already have this customer. we can not create it again
-    #         #print("create user meets apsw.ConstraintError")
-    #         self.conn.cursor().execute('ROLLBACK')
-    #         response = "Failed to create user\n"
-    #         return response
-            
-    #     self.conn.cursor().execute('Commit')
-    #     return response
-
-
     '''
    * Takes a user's username and password and attempts to log the user in.
    *
@@ -367,7 +333,6 @@ class Query:
    '''
 
     def transactionSearch(self, originCity, destCity, directFlight, dayOfMonth, numberOfItineraries):
-        # TODO your code here
         self.lastItineraries = []
         response = ""
         direct_flights = list(self.conn.cursor().execute(
@@ -389,13 +354,11 @@ class Query:
                         for itinerary in direct_flights:
                             fli = Flight(itinerary[0], itinerary[1], itinerary[2], itinerary[3], itinerary[4],
                                          itinerary[5], itinerary[6], itinerary[7], itinerary[8])
-                            # print('hello',fli.toString())
                             response += ("""Itinerary {}: 1 flight(s), {} minutes\n""").format(itineraryNum,
                                                                                                itinerary[6])
                             response += fli.toString()
                             self.lastItineraries.append([itineraryNum, fli, -2])
                             itineraryNum += 1
-                            # print(response)
                 elif directFlight == 0:
                     if all_flights_count == 0:
                         response = "No flights match your selection\n"
@@ -403,7 +366,6 @@ class Query:
                         for itinerary in direct_flights:
                             fli = Flight(itinerary[0], itinerary[1], itinerary[2], itinerary[3], itinerary[4],
                                          itinerary[5], itinerary[6], itinerary[7], itinerary[8])
-                            # print('hello',fli.toString())
                             response += ("""Itinerary {}: 1 flight(s), {} minutes\n""").format(itineraryNum,
                                                                                                itinerary[6])
                             self.lastItineraries.append([itineraryNum, fli, -2])
@@ -413,17 +375,12 @@ class Query:
                         itinerary_list = []
                         two_flights_itinerary_list = []
 
-                        # first find all direct flights
                         for direct_f in direct_flights:
                             flight = Flight(direct_f[0], direct_f[1], direct_f[2], direct_f[3], direct_f[4],
                                             direct_f[5],
                                             direct_f[6], direct_f[7], direct_f[8])
                             itinerary_list.append(Itinerary(direct_f[6], flight))
-                        
-                        # for abc in itinerary_list:
-                        #     print(abc.flight2.fid)
-
-
+                       
                         remain_count = numberOfItineraries - direct_flights_count
 
                         for all_itinerary in all_flights:
@@ -449,13 +406,7 @@ class Query:
                                 self.lastItineraries.append([itineraryNum,i.flight1, i.flight2])
                             else:
                                 self.lastItineraries.append([itineraryNum,i.flight1, -2])
-                            # self.lastItineraries.append([itineraryNum, i[fli1], i[fli2]])
-                            # if (i.NumFlights() == 1):
-                            #     print(itineraryNum)
-                            # elif (i.NumFlights() == 2):
-                            #     print(itineraryNum)
-                            # print(i[fli1])
-                            # prin
+                        
                             response += i.response(itineraryNum)
                             itineraryNum += 1
 
@@ -485,7 +436,6 @@ class Query:
     '''
 
     def transactionBook(self, itineraryId):
-        # TODO your code here
         self.conn.cursor().execute("BEGIN EXCLUSIVE;")
         # can = False
         # while not can:
@@ -510,16 +460,10 @@ class Query:
                     response = "No such itinerary {}\n".format(itineraryId)
                     self.conn.cursor().execute("ROLLBACK;")
                 else:
-                    # print('hi1')
-                    # print(self.lastItineraries[itineraryId][1].fid)
-                    # print(self.lastItineraries[itineraryId][2])
                     if self.lastItineraries[itineraryId][2] != -2:
-                        # print('hi')
                         f_id_1 = self.lastItineraries[itineraryId][1].fid
                         f_id_2 = self.lastItineraries[itineraryId][2].fid
-                        # print('hi')
                         p = self.lastItineraries[itineraryId][1].price + self.lastItineraries[itineraryId][2].price
-                        # print('hi')
                         day = self.lastItineraries[itineraryId][1].dayOfMonth
                         if self.checkFlightSameDay(self.username,day):
                             response = "You cannot book two flights in the same day\n"
@@ -538,11 +482,8 @@ class Query:
                                 response = "Booked flight(s), reservation ID: {}\n".format(reservationId)
                                 self.conn.cursor().execute("COMMIT;")
                     else:
-                        # print('hi????')
                         f_id_1 = self.lastItineraries[itineraryId][1].fid
-                        # print(f_id_1)
                         p = self.lastItineraries[itineraryId][1].price
-                        # print('hi')
                         day = self.lastItineraries[itineraryId][1].dayOfMonth
                         if self.checkFlightSameDay(self.username,day):
                             response = "You cannot book two flights in the same day\n"
@@ -552,15 +493,11 @@ class Query:
                                 response = "Booking failed\n"
                                 self.conn.cursor().execute("ROLLBACK;")
                             else:
-                                # print('hi')
                                 reservationId = list(self.conn.cursor().execute(self.GET_AVAILABLE_RID))[0][0]
-                                # print(reservationId)
                                 next_id = reservationId + 1
                                 self.conn.cursor().execute(
                                     self.INSERT_INTO_RESERVATIONS.format(reservationId, p, f_id_1, -1, self.username, day))
-                                # print('hi')
                                 self.conn.cursor().execute(self.UPDATE_NEXT_ID.format(next_id))
-                                # print('hello')
                                 response = "Booked flight(s), reservation ID: {}\n".format(reservationId)
                                 self.conn.cursor().execute("COMMIT;")
         except:
@@ -587,7 +524,6 @@ class Query:
 
 
     def transactionPay(self, reservationId):
-        # TODO your code here
         self.conn.cursor().execute("BEGIN EXCLUSIVE;")
         # can = False
         # while not can:
@@ -603,12 +539,8 @@ class Query:
                 self.conn.cursor().execute("ROLLBACK;")
             else:
                 # try:
-                # print('hi, whynot')
                 price = list(self.conn.cursor().execute(self.CHECK_UNPAID_RESV.format(reservationId, self.username)))
-                # print(price)
-                # print('hi??')
                 found_or_not = len(price)
-                # print('test',found_or_not)
                 if found_or_not == 0:
             # except:
                     response = "Cannot find unpaid reservation {} under user: {}\n".format(reservationId,
@@ -621,23 +553,13 @@ class Query:
                 # print('price',price)
                 else:
                     price1 = price[0][0]
-                    # print('price1',price1)
-                    # print('price',price[0][0])
-                    # user =  list(self.conn.cursor().execute(self.CHECK_RESV.USERNAME.format(reservationId)))
-                    # print('hi')
                     bal = list(self.conn.cursor().execute(self.CHECK_BALANCE.format(self.username)).fetchone())[0]
-                    # print('hi!')
-                    # print('bal',bal)
-                    # print('bal',bal[0])
                     if bal < price1:
                         response = "User has only {} in account but itinerary costs {}\n".format(bal, price1)
                         self.conn.cursor().execute("ROLLBACK;")
                     else:
-                        # print('left', bal-price1)
                         self.conn.cursor().execute(self.UPDATE_BAL.format((bal - price1), self.username))
-                        # print('hi')
                         self.conn.cursor().execute(self.UPDATE_RES_PAID.format(reservationId, self.username))
-                        # print('hi')
                         response = "Paid reservation: {} remaining balance: {}\n".format(reservationId, (bal - price1))
                         self.conn.cursor().execute("COMMIT;")
         except:
@@ -668,7 +590,6 @@ class Query:
 
 
     def transactionReservation(self):
-        # TODO your code here
         # can = False
         # while not can:
         #     try:
@@ -687,37 +608,29 @@ class Query:
                 resv = list(self.conn.cursor().execute(self.CHECK_USER_RESV.format(self.username)).fetchall())
                 self.conn.cursor().execute("COMMIT;")
                 found_length = len(resv)
-                # print(resv)
                 if found_length == 0:
                     response = "No reservations found\n"
                     # self.conn.cursor().execute("ROLLBACK;")
                 else:
                     for re in resv:
-                        # print('hi',re)
                         if re[4] == 0:
-                            # print('man',re[4])
                             pay_or_not = "false"
                         else:
                             pay_or_not = "true"
                         response += "Reservation {} paid: {}:\n".format(re[0], pay_or_not)
                         if re[3] == -1:
                             f_info = list(self.conn.cursor().execute(self.GET_FLIGHT_INFO.format(re[2])).fetchone())
-                            # print(f_info)
                             fli = Flight(f_info[0], f_info[1], f_info[2], f_info[3], f_info[4], f_info[5], f_info[6],
                                          f_info[7], f_info[8])
                             response += fli.toString()
                             # self.conn.cursor().execute("COMMIT;")
                         else:
-                            # print('hello again')
                             f_info_1 = list(self.conn.cursor().execute(self.GET_FLIGHT_INFO.format(re[2])).fetchone())
-                            # print(f_info_1)
-                            # print(f_info_1[0])
                             flight_1 = Flight(f_info_1[0], f_info_1[1], f_info_1[2], f_info_1[3], f_info_1[4],
                                               f_info_1[5], f_info_1[6], f_info_1[7], f_info_1[8])
                             response += flight_1.toString()
 
                             f_info_2 = list(self.conn.cursor().execute(self.GET_FLIGHT_INFO.format(re[3])).fetchone())
-                            # print(f_info_2)
                             flight_2 = Flight(f_info_2[0], f_info_2[1], f_info_2[2], f_info_2[3], f_info_2[4],
                                               f_info_2[5], f_info_2[6], f_info_2[7], f_info_2[8])
                             response += flight_2.toString()
@@ -762,7 +675,6 @@ class Query:
                 self.conn.cursor().execute("ROLLBACK;")
             else:
                 resv = list(self.conn.cursor().execute(self.FIND_RESV.format(reservationId,self.username)))
-                # print(resv)
                 found_length = len(resv)
                 if found_length == 0:
                     response = "Failed to cancel reservation {}\n".format(reservationId)
@@ -794,7 +706,6 @@ class Query:
 
 
     def checkFlightCapacity(self, fid):
-        # a helper function that you will use to implement previous functions
         result = self.conn.cursor().execute(self.CHECK_FLIGHT_CAPACITY.format(fid)).fetchone()
         if (result != None):
             return result[0]
@@ -803,8 +714,6 @@ class Query:
 
 
     def checkFlightIsFull(self, fid):
-        # a helper function that you will use to implement previous functions
-
         capacity = self.conn.cursor().execute(self.CHECK_FLIGHT_CAPACITY.format(fid)).fetchone()[0]
         booked_seats = self.conn.cursor().execute(self.CHECK_BOOKED_SEATS.format(fid, fid)).fetchone()[0]
         # print("Checking booked/capacity {}/{}".format(booked_seats, capacity))
