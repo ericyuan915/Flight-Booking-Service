@@ -130,7 +130,7 @@ The following are the functional specifications for the flight service system, i
 
 #### Testing:
 
-The test harness will run all the test cases in the provided `testcases/` folder. To run the harness, execute `python3 grading.py`.
+The test harness will run all the test cases in the provided `testcases/` folder. To run the harness, execute `python3 testing.py`.
 
 #### Python customer application
 
@@ -139,5 +139,5 @@ The test harness will run all the test cases in the provided `testcases/` folder
 2. install sqlite3 on your machine
 3. tar -zxvf flights-small.tar.gz
 4. git clone the repository
-5. run `python3 grading.py`
+5. run `python3 testing.py`
 
